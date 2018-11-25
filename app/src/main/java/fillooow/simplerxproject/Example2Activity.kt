@@ -8,39 +8,40 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import java.util.function.Predicate
 
-class Example1Activity : AppCompatActivity() {
+class Example2Activity : AppCompatActivity() {
 
     companion object {
-        val TAG = "RxTag"
+        val TAG = "RxTAG"
     }
 
+    lateinit var disposable: Disposable
     lateinit var animalsObservable: Observable<String>
     lateinit var animalsObserver: Observer<String>
-    lateinit var disposable: Disposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_example1)
+        setContentView(R.layout.activity_example2)
 
-        // Observable emits data
-        animalsObservable = Observable.just("Ant", "Bee", "Cat", "Dog", "Fox")
-
-        // Observer
+        animalsObservable = getMyAnimalsObservable()
         animalsObserver = getMyAnimalsObserver()
 
-        // Observer subscribing to observable
+        // Subscribing observer to observable
         animalsObservable
-            .subscribeOn(Schedulers.io()) // run tusk on a background thread
-            .observeOn(AndroidSchedulers.mainThread()) // observer receive the data on android UI thread and so can
-            // take any UI related action
-            .subscribeWith(animalsObserver) // returns Disposable, so we can unsubscribe at onDestroy, FE
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .filter{
+                it.toLowerCase().startsWith("b")
+            }
+            .subscribeWith(animalsObserver)
     }
 
-    fun getMyAnimalsObserver(): Observer<String> {
+    private fun getMyAnimalsObserver(): Observer<String>{
         return object : Observer<String> {
+
             override fun onComplete() {
-                Log.d(TAG, "All items are emitted!")
+                Log.d(TAG, "All items are emitted")
             }
 
             override fun onSubscribe(d: Disposable) {
@@ -49,20 +50,27 @@ class Example1Activity : AppCompatActivity() {
             }
 
             override fun onNext(t: String) {
-                Log.d(TAG, "onNext, name: $t")
+                Log.d(TAG, "Name: $t")
             }
 
             override fun onError(e: Throwable) {
-                Log.d(TAG, "error: ${e.message}")
+                Log.d(TAG, "onError ${e.message}")
             }
-
         }
+    }
+
+    private fun getMyAnimalsObservable(): Observable<String>{
+        return Observable.fromArray(
+            "Ant", "Ape",
+            "Bat", "Bee", "Bear", "Butterfly",
+            "Cat", "Crab", "Cod",
+            "Dog", "Dove",
+            "Fox", "Frog")
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        // Don't send events once the activity is destroyed
         disposable.dispose()
     }
 }
