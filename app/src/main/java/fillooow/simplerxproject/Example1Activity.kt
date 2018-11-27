@@ -9,6 +9,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
+// observer and observable
+
 class Example1Activity : AppCompatActivity() {
 
     companion object {

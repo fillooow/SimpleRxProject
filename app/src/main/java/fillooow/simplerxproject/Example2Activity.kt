@@ -10,6 +10,8 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.util.function.Predicate
 
+// filter and disposable
+
 class Example2Activity : AppCompatActivity() {
 
     companion object {
