@@ -33,11 +33,10 @@ class Example4Activity : AppCompatActivity() {
         disposable.add(
             getNotesObservable().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                /*.map {
+                .map {
                     it.note = it.note.toUpperCase()
+                    it
                 }
-                Have no ideas why this fun don't work with mapping
-                */
                 .subscribeWith(myNotesObserver)
         )
     }
